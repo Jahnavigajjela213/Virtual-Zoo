@@ -57,5 +57,5 @@ python app.py
 
 
 Jahnavi Gajjela
-📫 jahnavigajjela@example.com
+📫 jahnavi.gajjela123@gmail.com
 🔗 GitHub | LinkedIn
