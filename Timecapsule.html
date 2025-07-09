@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evolution Timeline</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #000428, #004e92);
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            padding: 20px;
+            font-size: 2.5em;
+        }
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+        .event {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            margin: 10px;
+            border-radius: 10px;
+            width: 60%;
+            font-size: 1.2em;
+            transition: transform 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+        }
+        .event img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        .event:hover img {
+            transform: scale(1.2);
+        }
+        .event:nth-child(even) {
+            align-self: flex-start;
+        }
+        .event:nth-child(odd) {
+            align-self: flex-end;
+        }
+        .line {
+            width: 5px;
+            background: white;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        .modal-content {
+            position: relative;
+            margin: 10% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 700px;
+            text-align: center;
+        }
+        .modal-content img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 25px;
+            color: white;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Evolution Timeline</h1>
+    <div class="timeline">
+        <div class="line"></div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="imageModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <div class="modal-content">
+            <img id="modalImage" src="" alt="Evolution Event">
+        </div>
+    </div>
+
+    <script>
+        const events = [
+            { year: '3.8 Billion Years Ago', text: 'Formation of Earth\'s first oceans and chemical evolution.', img: 'capsule1.jpeg' },
+            { year: '3.5 Billion Years Ago', text: 'First life forms (prokaryotic bacteria) appear.', img: 'capsule2.jpeg' },
+            { year: '2.5 Billion Years Ago', text: 'Oxygenation of the atmosphere due to photosynthetic cyanobacteria.', img: 'capsule3.jpeg' },
+            { year: '1.5 Billion Years Ago', text: 'First eukaryotic cells emerge.', img: 'capsule4.jpeg' },
+            { year: '600 Million Years Ago', text: 'Multicellular organisms evolve in oceans.', img: 'capsule5.jpeg' },
+            { year: '500 Million Years Ago', text: 'First vertebrates (early fish) appear.', img: 'capsule6.jpeg' },
+            { year: '400 Million Years Ago', text: 'Plants and insects colonize land.', img: 'capsule7.jpeg' },
+            { year: '375 Million Years Ago', text: 'First land vertebrates (amphibians) emerge.', img: 'capsule8.jpeg' },
+            { year: '300 Million Years Ago', text: 'Reptiles dominate.', img: 'capsule9.jpeg' },
+            { year: '230 Million Years Ago', text: 'Dinosaurs appear.', img: 'capsule10.jpeg' },
+            { year: '150 Million Years Ago', text: 'First birds evolve from dinosaurs.', img: 'capsule11.jpeg' },
+            { year: '65 Million Years Ago', text: 'Mass extinction event leads to the dominance of mammals.', img: 'capsule12.jpeg' },
+            { year: '6 Million Years Ago', text: 'First human ancestors (hominins) evolve.', img: 'capsule13.jpeg' },
+            { year: '300,000 Years Ago', text: 'Modern humans (Homo sapiens) appear.', img: 'capsule14.jpeg' }
+        ];
+        
+        const timeline = document.querySelector(".timeline");
+        events.forEach(event => {
+            const div = document.createElement("div");
+            div.classList.add("event");
+            div.innerHTML = `
+                <img src="${event.img}" alt="${event.year}">
+                <div>
+                    <strong>${event.year}</strong><br>
+                    ${event.text}
+                </div>
+            `;
+            div.addEventListener('click', () => openModal(event.img));
+            timeline.appendChild(div);
+        });
+
+        function openModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = imageSrc;
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = 'none';
+        }
+
+        // Close modal when clicking outside of the image
+        window.onclick = function(event) {
+            const modal = document.getElementById('imageModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+
+</body>
+</html>

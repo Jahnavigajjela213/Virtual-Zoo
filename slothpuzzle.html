@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sloth Jigsaw Puzzle</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-image: url('fore.jpg'); /* Same background image as the Elephant Puzzle */
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed; /* Ensures the background stays in place */
+      color: white;
+    }
+
+    #game-container {
+      background-color: rgba(0, 0, 0, 0.7); /* Dark overlay for readability */
+      padding: 20px;
+      border-radius: 10px;
+      display: inline-block;
+      margin-top: 50px;
+    }
+
+    #puzzle-container {
+      width: 300px;
+      height: 300px;
+      margin: 20px auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      border: 2px solid #333;
+    }
+
+    .piece-slot {
+      width: 100px;
+      height: 100px;
+      background-color: #eee;
+      border: 1px solid #aaa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #pieces-container {
+      margin: 20px auto;
+      width: 350px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .draggable {
+      width: 100px;
+      height: 100px;
+      cursor: grab;
+      background-size: 300px 300px;
+      background-repeat: no-repeat;
+      border: 2px solid #888;
+    }
+
+    #message {
+      font-size: 1.5rem;
+      color: green;
+      margin-top: 20px;
+    }
+
+    /* Bouncy effect for the title */
+    @keyframes bounce {
+      0% { transform: translateY(0); }
+      30% { transform: translateY(-10px); }
+      50% { transform: translateY(5px); }
+      70% { transform: translateY(-5px); }
+      100% { transform: translateY(0); }
+    }
+
+    h1 {
+      display: inline-block;
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #FF6347; /* Tomato color for the title */
+      animation: bounce 1s ease-out; /* Run animation once with ease-out effect */
+      animation-fill-mode: forwards; /* Keep the final state of the animation */
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <h1>Sloth Jigsaw Puzzle</h1>
+    <p>Drag and drop the pieces into the correct slots to complete the puzzle!</p>
+
+    <div id="puzzle-container">
+      <div class="piece-slot" data-id="0"></div>
+      <div class="piece-slot" data-id="1"></div>
+      <div class="piece-slot" data-id="2"></div>
+      <div class="piece-slot" data-id="3"></div>
+      <div class="piece-slot" data-id="4"></div>
+      <div class="piece-slot" data-id="5"></div>
+      <div class="piece-slot" data-id="6"></div>
+      <div class="piece-slot" data-id="7"></div>
+      <div class="piece-slot" data-id="8"></div>
+    </div>
+
+    <div id="pieces-container"></div>
+    <div id="message"></div>
+  </div>
+
+  <script>
+    const imageURL = 'https://res.cloudinary.com/zicasso/image/fetch/c_fill,f_auto,g_auto,h_576,q_auto,w_865/https://images.zicasso.com/a8f89ba13cd273edb112a00b8e05b920.jpg'; // Sloth image
+    const puzzleContainer = document.getElementById('puzzle-container');
+    const piecesContainer = document.getElementById('pieces-container');
+    const message = document.getElementById('message');
+
+    const totalPieces = 9;
+    const gridSize = 300; // Size of the full image (300x300px)
+    const pieceSize = gridSize / 3; // Each piece is 100x100px
+
+    // Add animal sound (replace with the sloth sound URL)
+    const sound = new Audio('slothsound.mp3'); // Replace with actual sloth sound
+
+    // Generate shuffled pieces
+    const shuffledPositions = Array.from({ length: totalPieces }, (_, i) => i).sort(() => Math.random() - 0.5);
+
+    shuffledPositions.forEach((id) => {
+      const piece = document.createElement('div');
+      piece.className = 'draggable';
+      piece.setAttribute('draggable', true);
+      piece.style.backgroundImage = `url(${imageURL})`;
+      piece.style.backgroundPosition = getBackgroundPosition(id);
+      piece.dataset.id = id;
+
+      // Add event listeners
+      piece.addEventListener('dragstart', dragStart);
+
+      piecesContainer.appendChild(piece);
+    });
+
+    // Add event listeners for slots
+    const slots = document.querySelectorAll('.piece-slot');
+    slots.forEach((slot) => {
+      slot.addEventListener('dragover', dragOver);
+      slot.addEventListener('drop', dropPiece);
+    });
+
+    function dragStart(event) {
+      event.dataTransfer.setData('text', event.target.dataset.id);
+    }
+
+    function dragOver(event) {
+      event.preventDefault(); // Allow dropping
+    }
+
+    function dropPiece(event) {
+      event.preventDefault();
+      const draggedId = event.dataTransfer.getData('text');
+      const draggedPiece = document.querySelector(`.draggable[data-id='${draggedId}']`);
+
+      // If the slot already contains a piece, move it back to the container
+      if (event.target.firstChild) {
+        const existingPiece = event.target.firstChild;
+        piecesContainer.appendChild(existingPiece);
+      }
+
+      // Place the dragged piece into the slot
+      event.target.appendChild(draggedPiece);
+
+      // Check if the puzzle is completed
+      checkCompletion();
+    }
+
+    function getBackgroundPosition(id) {
+      const row = Math.floor(id / 3);
+      const col = id % 3;
+      return `-${col * pieceSize}px -${row * pieceSize}px`;
+    }
+
+    function checkCompletion() {
+      const slots = document.querySelectorAll('.piece-slot');
+      let completed = true;
+
+      slots.forEach((slot) => {
+        const piece = slot.firstChild;
+        if (!piece || piece.dataset.id !== slot.dataset.id) {
+          completed = false;
+        }
+      });
+
+      if (completed) {
+        message.textContent = 'Congratulations! You completed the sloth puzzle!';
+        sound.play(); // Play the animal sound when puzzle is completed
+      } else {
+        message.textContent = '';
+      }
+    }
+  </script>
+</body>
+</html>
