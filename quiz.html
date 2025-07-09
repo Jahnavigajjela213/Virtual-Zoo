@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Quiz</title>
+    <style>
+        /* Background video styles */
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f0f8ff;
+        }
+
+        .quiz-container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .question {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .options button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #ffddc1; /* Pastel color before selection */
+            transition: background 0.3s;
+        }
+
+        .options button:hover {
+            background-color: #ffb6b9; /* Light pastel hover effect */
+        }
+
+        .correct {
+            background-color: lightgreen !important;
+        }
+
+        .incorrect {
+            background-color: lightcoral !important;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+
+        .answer-image {
+            width: 100%;
+            max-height: 250px;
+            object-fit: contain;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Blinking title effect for 5 times */
+        @keyframes blinkTitle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .blinking-title {
+               font-size: 32px;
+               font-weight: bold;
+               font-family: "Arial", sans-serif; /* Use a cleaner, more readable font */
+               color: #090301;
+               text-shadow: none; /* Removed the shadow for clearer text */
+               animation: blinkTitle 1s step-start 5;
+        }
+    </style>
+</head>
+<body>
+    <video id="bg-video" autoplay loop muted>
+        <source src="quizback.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="quiz-container">
+        <h2 class="blinking-title">🐾 Animal Quiz Game 🐾</h2>
+        <div id="quiz"></div>
+        <img id="answerImage" class="answer-image" src="" alt="Answer Image">
+        <div class="result" id="result"></div>
+    </div>
+
+    <audio id="correct-sound" src="quizaudio.mp3" preload="auto"></audio>
+    <audio id="incorrect-sound" src="quizaudio.mp3" preload="auto"></audio>
+
+    <script>
+        let quizData = [
+    { question: "What is the fastest land animal?", options: ["Cheetah", "Lion", "Horse", "Kangaroo"], answer: "Cheetah", image: "quiz1.jpg" },
+    { question: "Which animal is known for its ability to change color?", options: ["Octopus", "Chameleon", "Jellyfish", "Parrot"], answer: "Chameleon", image: "quiz2.jpg" },  <!-- Missing comma here -->
+    { question: "What is the fastest land animal?", options: ["Cheetah", "Lion", "Horse", "Kangaroo"], answer: "Cheetah", image: "quiz1.jpg" },
+    { question: "Which animal is known for its ability to change color?", options: ["Octopus", "Chameleon", "Jellyfish", "Parrot"], answer: "Chameleon", image: "quiz2.jpg" },
+    { question: "What is the largest mammal?", options: ["Elephant", "Blue Whale", "Giraffe", "Hippopotamus"], answer: "Blue Whale", image: "quiz3.jpg" },
+    { question: "Which bird is known for its ability to mimic human speech?", options: ["Parrot", "Crow", "Eagle", "Sparrow"], answer: "Parrot", image: "quiz4.jpg" },
+    { question: "What is the only flying mammal?", options: ["Bat", "Flying Squirrel", "Eagle", "Pigeon"], answer: "Bat", image: "quiz5.jpg" },
+    { question: "Which animal has the longest lifespan?", options: ["Tortoise", "Elephant", "Blue Whale", "Shark"], answer: "Tortoise", image: "quiz6.jpg" },
+    { question: "What is the tallest land animal?", options: ["Elephant", "Giraffe", "Ostrich", "Kangaroo"], answer: "Giraffe", image: "quiz7.jpg" },
+    { question: "Which animal is known as the 'King of the Jungle'?", options: ["Lion", "Tiger", "Leopard", "Cheetah"], answer: "Lion", image: "quiz8.jpg" },
+    { question: "Which sea creature has eight arms?", options: ["Octopus", "Squid", "Starfish", "Jellyfish"], answer: "Octopus", image: "quiz9.jpg" },
+    { question: "What is the national bird of the United States?", options: ["Bald Eagle", "Peacock", "Owl", "Sparrow"], answer: "Bald Eagle", image: "quiz10.jpg" },
+    { question: "Which animal is known for playing dead as a defense mechanism?", options: ["Opossum", "Armadillo", "Hedgehog", "Rabbit"], answer: "Opossum", image: "quiz11.jpg" },
+    { question: "Which reptile can detach its tail to escape predators?", options: ["Lizard", "Snake", "Turtle", "Crocodile"], answer: "Lizard", image: "quiz12.jpg" },
+    { question: "Which animal is known to have the strongest bite force?", options: ["Crocodile", "Shark", "Lion", "Hyena"], answer: "Crocodile", image: "quiz13.jpg" },
+    { question: "Which insect is known for its ability to produce light?", options: ["Firefly", "Butterfly", "Beetle", "Dragonfly"], answer: "Firefly", image: "quiz14.jpg" }
+];
+
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        shuffleArray(quizData);
+
+        const quizContainer = document.getElementById("quiz");
+        const resultContainer = document.getElementById("result");
+        const answerImage = document.getElementById("answerImage");
+        const correctSound = document.getElementById("correct-sound");
+        const incorrectSound = document.getElementById("incorrect-sound");
+        let currentQuestion = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            if (currentQuestion < quizData.length) {
+                const q = quizData[currentQuestion];
+                quizContainer.innerHTML = `
+                    <div class="question">${q.question}</div>
+                    <div class="options">
+                        ${q.options.map(option => `<button onclick="checkAnswer(this, '${option}')">${option}</button>`).join('')}
+                    </div>
+                `;
+                answerImage.style.display = "none";
+            } else {
+                quizContainer.innerHTML = "";
+                resultContainer.innerHTML = `You scored ${score} out of ${quizData.length}`;
+            }
+        }
+
+        function checkAnswer(button, selected) {
+            const correctAnswer = quizData[currentQuestion].answer;
+            const buttons = document.querySelectorAll('.options button');
+            
+            buttons.forEach(btn => {
+                if (btn.textContent === correctAnswer) {
+                    btn.classList.add('correct');
+                } else {
+                    btn.classList.add('incorrect');
+                }
+                btn.disabled = true;
+            });
+
+            answerImage.src = quizData[currentQuestion].image;
+            answerImage.style.display = "block";
+            
+            if (selected === correctAnswer) {
+                score++;
+                correctSound.play();
+            } else {
+                incorrectSound.play();
+            }
+            
+            setTimeout(() => {
+                currentQuestion++;
+                loadQuestion();
+            }, 2000);
+        }
+
+        loadQuestion();
+    </script>
+    <!-- Link to your JavaScript file for any game interactions -->
+
+        <!-- Voice Assistant Button -->
+        <button id="voice-assistant-btn" style="position: fixed; bottom: 20px; right: 20px; background: #fff; border: 2px solid #000; border-radius: 50%; padding: 10px;">
+            🎤
+        </button>
+        
+        <!-- Link to the JavaScript file -->
+        <script src="quizVoiceAssistant.js" defer></script>
+</body>
+</html>
