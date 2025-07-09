@@ -25,6 +25,7 @@ Welcome to the **Virtual Zoo**, a web-based platform that brings wildlife educat
 
 ---
 
+
 ## 🛠 Built With
 
 - **Frontend**: HTML, CSS, JavaScript  
@@ -54,3 +55,7 @@ pip install -r requirements.txt
 python app.py
 
 
+
+Jahnavi Gajjela
+📫 jahnavigajjela@example.com
+🔗 GitHub | LinkedIn
