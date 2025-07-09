@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blurred Safari</title>
+    <link rel="stylesheet" href="blurredsafari.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>Guess the Animal Name!</h1>
+        <div class="image-container">
+            <img id="animal-image" src="" alt="Animal Image" class="blurred">
+        </div>
+        <div class="name-container">
+            <label for="animal-guess">Guess the name: </label>
+            <input type="text" id="animal-guess" placeholder="Guess the animal name">
+            <button onclick="checkAnswer()">Submit</button>
+        </div>
+        <div id="feedback"></div>
+        <div id="timer">Time Left: 30</div>
+    </div>
+
+    <script src="blurredsafariscript.js"></script>
+</body>
+</html>

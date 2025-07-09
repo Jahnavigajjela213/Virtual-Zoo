@@ -1,0 +1,69 @@
+body {
+    font-family: Arial, sans-serif;
+    background: url('animalsafari.jpg') no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.game-container {
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+    width: 300px;
+}
+
+.image-container {
+    margin: 20px;
+}
+
+img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    transition: filter 0.5s ease;
+}
+
+.blurred {
+    filter: blur(10px);
+}
+
+.name-container {
+    margin: 20px 0;
+}
+
+#animal-guess {
+    padding: 10px;
+    font-size: 16px;
+    margin: 10px;
+    width: 80%;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #031a33;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #671304;
+}
+
+#timer {
+    font-size: 18px;
+    margin-top: 20px;
+}
+
+#feedback {
+    font-size: 16px;
+    margin-top: 20px;
+}
