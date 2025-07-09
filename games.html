@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoo Games - Virtual Zoo</title>
+    <link rel="stylesheet" href="style1.css"> <!-- Link to your CSS file -->
+    <style>
+        body {
+            background-image: url('gamesbg.jpg'); /* Replace with actual image filename */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <div class="header-container">
+            <h1>Zoo Games</h1>
+            <p>Enjoy these fun and educational games about animals!</p>
+        </div>
+    </header>
+
+    <!-- Games Buttons Section -->
+    <div class="game-buttons-container">
+        <button onclick="window.location.href='animalmatching.html'">Animal Matching Game</button>
+        <button onclick="window.location.href='blurredsafari.html'">Blurred Safari</button>
+        <button onclick="window.location.href='scavenger.html'">Zoo Scavenger Hunt</button>
+        <button onclick="window.location.href='puzzlegame.html'">Habitat Puzzle</button>
+        <button onclick="window.location.href='foodchain.html'">Food Chain Quiz</button>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Created with passion for wildlife learning and fun!</p>
+    </footer>
+
+    <!-- Link to your JavaScript file for any game interactions -->
+
+        <!-- Voice Assistant Button -->
+        <button id="voice-assistant-btn" style="position: fixed; bottom: 20px; right: 20px; background: #fff; border: 2px solid #000; border-radius: 50%; padding: 10px;">
+            🎤
+        </button>
+        
+        <!-- Link to the JavaScript file -->
+        <script src="gamesVoiceAssistant.js" defer></script>
+
+    
+
+    
+</body>
+</html>

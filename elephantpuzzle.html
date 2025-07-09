@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elephant Jigsaw Puzzle</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-image: url('fore.jpg'); /* Background image */
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: white;
+    }
+
+    #game-container {
+      background-color: rgba(0, 0, 0, 0.7); /* Dark overlay */
+      padding: 20px;
+      border-radius: 10px;
+      display: inline-block;
+      margin-top: 50px;
+    }
+
+    #puzzle-container {
+      width: 300px;
+      height: 300px;
+      margin: 20px auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      border: 2px solid #333;
+    }
+
+    .piece-slot {
+      width: 100px;
+      height: 100px;
+      background-color: #eee;
+      border: 1px solid #aaa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #pieces-container {
+      margin: 20px auto;
+      width: 350px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .draggable {
+      width: 100px;
+      height: 100px;
+      cursor: grab;
+      background-size: 300px 300px;
+      background-repeat: no-repeat;
+      border: 2px solid #888;
+    }
+
+    #message {
+      font-size: 1.5rem;
+      color: green;
+      margin-top: 20px;
+    }
+
+    @keyframes bounce {
+      0% { transform: translateY(0); }
+      30% { transform: translateY(-10px); }
+      50% { transform: translateY(5px); }
+      70% { transform: translateY(-5px); }
+      100% { transform: translateY(0); }
+    }
+
+    h1 {
+      display: inline-block;
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #FF6347;
+      animation: bounce 1s ease-out forwards;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <h1>Elephant Jigsaw Puzzle</h1>
+    <p>Drag and drop the pieces into the correct slots to complete the puzzle!</p>
+
+    <div id="puzzle-container">
+      <div class="piece-slot" data-id="0"></div>
+      <div class="piece-slot" data-id="1"></div>
+      <div class="piece-slot" data-id="2"></div>
+      <div class="piece-slot" data-id="3"></div>
+      <div class="piece-slot" data-id="4"></div>
+      <div class="piece-slot" data-id="5"></div>
+      <div class="piece-slot" data-id="6"></div>
+      <div class="piece-slot" data-id="7"></div>
+      <div class="piece-slot" data-id="8"></div>
+    </div>
+
+    <div id="pieces-container"></div>
+
+    <div id="message"></div>
+
+    <!-- Elephant Sound -->
+    <audio id="elephantSound" src="elephantsound.mp3"></audio>
+
+  </div>
+
+  <script>
+    const imageURL = 'https://upload.wikimedia.org/wikipedia/commons/3/37/African_Bush_Elephant.jpg';
+    const puzzleContainer = document.getElementById('puzzle-container');
+    const piecesContainer = document.getElementById('pieces-container');
+    const message = document.getElementById('message');
+    const elephantSound = document.getElementById('elephantSound');
+
+    const totalPieces = 9;
+    const gridSize = 300;
+    const pieceSize = gridSize / 3;
+
+    const shuffledPositions = Array.from({ length: totalPieces }, (_, i) => i).sort(() => Math.random() - 0.5);
+
+    shuffledPositions.forEach((id) => {
+      const piece = document.createElement('div');
+      piece.className = 'draggable';
+      piece.setAttribute('draggable', true);
+      piece.style.width = `${pieceSize}px`;
+      piece.style.height = `${pieceSize}px`;
+      piece.style.backgroundImage = `url(${imageURL})`;
+      piece.style.backgroundPosition = getBackgroundPosition(id);
+      piece.dataset.id = id;
+
+      piece.addEventListener('dragstart', dragStart);
+
+      piecesContainer.appendChild(piece);
+    });
+
+    document.querySelectorAll('.piece-slot').forEach((slot) => {
+      slot.addEventListener('dragover', dragOver);
+      slot.addEventListener('drop', dropPiece);
+    });
+
+    function dragStart(event) {
+      event.dataTransfer.setData('text', event.target.dataset.id);
+    }
+
+    function dragOver(event) {
+      event.preventDefault();
+    }
+
+    function dropPiece(event) {
+      event.preventDefault();
+      const draggedId = event.dataTransfer.getData('text');
+      const draggedPiece = document.querySelector(`.draggable[data-id='${draggedId}']`);
+
+      if (event.target.firstChild) {
+        piecesContainer.appendChild(event.target.firstChild);
+      }
+
+      event.target.appendChild(draggedPiece);
+
+      checkCompletion();
+    }
+
+    function getBackgroundPosition(id) {
+      const row = Math.floor(id / 3);
+      const col = id % 3;
+      return `${-col * pieceSize}px ${-row * pieceSize}px`;
+    }
+
+    function checkCompletion() {
+      const slots = document.querySelectorAll('.piece-slot');
+      let completed = true;
+
+      slots.forEach((slot) => {
+        const piece = slot.firstChild;
+        if (!piece || piece.dataset.id !== slot.dataset.id) {
+          completed = false;
+        }
+      });
+
+      if (completed) {
+        message.textContent = 'Congratulations! You completed the elephant puzzle!';
+
+        // Play the elephant sound
+        elephantSound.play();
+      } else {
+        message.textContent = '';
+      }
+    }
+  </script>
+
+</body>
+</html>

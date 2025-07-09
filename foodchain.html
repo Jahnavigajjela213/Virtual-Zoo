@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build a Food Chain</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f6c9c9;
+        }
+        h1 {
+            border: 7px solid #ff6b6b;
+            display: inline-block;
+            padding: 10px 100px;
+            background-color: #ffb6b9;
+            border-radius: 10px;
+            font-size: 50px;  
+        }
+
+        .game-container { display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        .drag-container, .drop-container { display: flex; justify-content: center; gap: 20px; margin-top: 20px; }
+        .draggable { width: 120px; padding: 10px; border: 2px solid black; cursor: grab; background: lightyellow; text-align: center; }
+        .dropzone { width: 130px; height: 120px; border: 2px dashed gray; display: flex; align-items: center; justify-content: center; background: #f4f4f4; position: relative; }
+        .dropzone:hover { border: 2px solid black; }
+        .correct { background: lightgreen; position: relative; }
+        .animal-img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+        #message { font-size: 18px; font-weight: bold; margin-top: 10px; }
+        #score, #timer { font-size: 20px; margin-top: 20px; font-weight: bold; }
+        #controls { margin-top: 20px; }
+        .popup { 
+            display: none; 
+            background-color: white; 
+            border: 2px solid #ff6b6b; 
+            padding: 20px; 
+            border-radius: 10px; 
+            width: 300px; 
+            margin: 0 auto; 
+            text-align: center; 
+        }
+        .popup button {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        body {
+    background-image: url('foodchainimage.jpg'); /* Replace with your actual image filename */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+    </style>
+</head>
+<body>
+    <h1>Build a Food Chain</h1>
+    <p>Drag the foods in the correct order before time runs out!</p>
+    
+    <p id="score">Score: 0</p>
+    <p id="timer">Time Left: 30s</p>
+    <p id="message"></p>
+    
+    <div class="game-container">
+        <div class="drop-container" id="food-chain"></div>
+        <div class="drag-container" id="food-options"></div>
+    </div>
+
+    <div id="controls">
+        <button onclick="startGame()">Restart Game</button>
+    </div>
+
+    <!-- Popup for Final Score -->
+    <div class="popup" id="popup">
+        <p id="final-score-message"></p>
+        <button onclick="startGame()">Restart Game</button>
+    </div>
+
+    <!-- Add sound elements -->
+    <audio id="hurrahSound" src="deep.mp3"></audio>
+    <audio id="clickSound" src="click.mp3"></audio>
+
+    <script>
+        const foodChains = [
+            { chain: ['🌱 Grass', '🦌 Deer', '🦁 Lion'], images: ['grass.jpg', 'deer.jpg', 'lion3.jpg'] },
+            { chain: ['🦠 Plankton', '🐟 Small Fish', '🐠 Big Fish'], images: ['plankton.jpg', 'smallfish.jpg', 'bigfish.jpg'] },
+            { chain: ['🌿 Leaves', '🐛 Caterpillar', '🐦 Bird', '🦅 Hawk'], images: ['leaves.jpg', 'caterpillar.jpg', 'bird.jpg', 'hawk.jpg'] },
+            { chain: ['🌻 Sunflower', '🐝 Bee', '🐸 Frog', '🦊 Fox'], images: ['sunflower.jpg', 'bee.jpg', 'frog.jpg', 'fox2.jpg'] },
+            { chain: ['🌾 Wheat', '🐭 Mouse', '🐍 Snake', '🦅 Eagle'], images: ['wheat.jpg', 'mouse.jpg', 'snake.jpg', 'eagle.jpg'] }
+        ];
+
+        let currentIndex = 0;
+        let correctCount = 0;
+        let score = 0;
+        let timeLeft = 30;
+        let timer;
+        let gameActive = true;
+
+        const hurrahSound = document.getElementById("hurrahSound");
+        const clickSound = document.getElementById("clickSound");
+
+        function startGame() {
+            score = 0;
+            resetGame();
+        }
+
+        function resetGame() {
+            correctCount = 0;
+            timeLeft = 30;
+            gameActive = true;
+            document.getElementById("score").textContent = `Score: ${score}`;
+            document.getElementById("timer").textContent = `Time Left: ${timeLeft}s`;
+            document.getElementById("message").textContent = "";
+            document.getElementById("popup").style.display = "none"; // Hide the popup
+            loadFoodChain();
+            startTimer();
+        }
+
+        function loadFoodChain() {
+            document.getElementById("food-chain").innerHTML = "";
+            document.getElementById("food-options").innerHTML = "";
+            
+            let chain = foodChains[currentIndex].chain;
+            let shuffled = [...chain].sort(() => Math.random() - 0.5);
+            
+            chain.forEach((item, index) => {
+                let dropzone = document.createElement("div");
+                dropzone.classList.add("dropzone");
+                dropzone.dataset.correct = item;
+                dropzone.dataset.image = foodChains[currentIndex].images[index];
+                document.getElementById("food-chain").appendChild(dropzone);
+            });
+            
+            shuffled.forEach(item => {
+                let dragItem = document.createElement("div");
+                dragItem.classList.add("draggable");
+                dragItem.draggable = true;
+                dragItem.textContent = item;
+                dragItem.id = item;
+                document.getElementById("food-options").appendChild(dragItem);
+            });
+            
+            addDragEvents();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    document.getElementById("timer").textContent = `Time Left: ${timeLeft}s`;
+                } else {
+                    clearInterval(timer);
+                    gameActive = false;
+                    document.getElementById("message").textContent = "⏳ Time's up!";
+
+                    // Automatically load the next food chain after a short delay
+                    setTimeout(nextFoodChain, 2000); // Wait 2 seconds before loading next chain
+                }
+            }, 1000);
+        }
+
+        function addDragEvents() {
+            const draggables = document.querySelectorAll(".draggable");
+            const dropzones = document.querySelectorAll(".dropzone");
+            
+            draggables.forEach(draggable => {
+                draggable.addEventListener("dragstart", event => {
+                    if (!gameActive) return;
+                    event.dataTransfer.setData("text", event.target.id);
+                });
+            });
+            
+            dropzones.forEach(dropzone => {
+                dropzone.addEventListener("dragover", event => {
+                    if (!gameActive) return;
+                    event.preventDefault();
+                });
+
+                dropzone.addEventListener("drop", event => {
+                    if (!gameActive) return;
+                    event.preventDefault();
+                    const draggedId = event.dataTransfer.getData("text");
+                    const correctId = event.target.dataset.correct;
+                    const draggedElement = document.getElementById(draggedId);
+                    
+                    if (draggedId === correctId) {
+                        draggedElement.textContent = "";
+                        event.target.appendChild(draggedElement);
+                        event.target.classList.add("correct");
+
+                        let img = document.createElement("img");
+                        img.src = event.target.dataset.image;
+                        img.classList.add("animal-img");
+                        event.target.appendChild(img);
+
+                        // Play the "click" sound when an item is placed correctly, unless it's the last one
+                        if (correctCount < foodChains[currentIndex].chain.length - 1) {
+                            clickSound.play();
+                        }
+
+                        correctCount++;
+                        if (correctCount === foodChains[currentIndex].chain.length) {
+                            score += 1;
+                            document.getElementById("score").textContent = `Score: ${score}`;
+                            document.getElementById("message").textContent = "🎉 Well done!";
+                            hurrahSound.play(); // Play the hurrah sound for the last card
+                            clearInterval(timer);
+
+                            // Automatically load the next food chain after a short delay
+                            setTimeout(nextFoodChain, 2000); // Wait 2 seconds before loading next chain
+                        }
+                    }
+                });
+            });
+        }
+
+        function nextFoodChain() {
+            if (currentIndex < foodChains.length - 1) {
+                currentIndex++;
+                resetGame(); // Load the next chain
+            } else {
+                // Game over, display final score
+                gameActive = false;
+                document.getElementById("message").textContent = `Game Over! Final Score: ${score}`;
+                document.getElementById("score").textContent = `Final Score: ${score}`;
+                document.getElementById("final-score-message").textContent = `Your Final Score: ${score}`;
+                document.getElementById("popup").style.display = "block"; // Show the popup
+                hurrahSound.play(); // Play the congratulatory sound
+            }
+        }
+
+        startGame();
+    </script>
+</body>
+</html>
